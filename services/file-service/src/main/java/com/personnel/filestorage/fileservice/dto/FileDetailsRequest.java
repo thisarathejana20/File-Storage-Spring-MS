@@ -1,9 +1,9 @@
-package com.personnel.filestorage.metadataservice.dto;
+package com.personnel.filestorage.fileservice.dto;
 
 import lombok.Builder;
 
 @Builder
-public record FileUploadedConsumer(
+public record FileDetailsRequest(
         String fileName,
         String fileType,
         String fileUrl,

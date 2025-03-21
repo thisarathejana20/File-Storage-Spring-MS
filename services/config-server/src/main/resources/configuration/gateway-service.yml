@@ -1,0 +1,28 @@
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: metadata-service
+          uri: lb://METADATA-SERVICE
+          predicates:
+            - Path=/metadata/**
+
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/auth/**
+
+        - id: file-service
+          uri: lb://FILE-SERVICE
+          predicates:
+            - Path=/file/**
+
+server:
+  port: 8222
+
+
+
+

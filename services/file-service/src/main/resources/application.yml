@@ -3,8 +3,19 @@ spring:
     name: file-service
   config:
     import: optional:configserver:http://localhost:8888
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.type.mapping: fileDetailsRequest:com.personnel.filestorage.fileservice.dto.FileDetailsRequest
 
 cloudinary:
   cloud-name: dq8ufuxuz
   api-key: 334842229351884
   api-secret: 6IX6zEexR5a5R35k_jiRff81eaU
+
+
+server:
+  port: 8030
