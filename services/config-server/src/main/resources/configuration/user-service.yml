@@ -11,7 +11,21 @@ spring:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.type.mapping: accountActivationRequest:com.personnel.filestorage.user_service.dto.AccountActivationRequest
+
 server:
   port: 8060
-  servlet:
-    context-path: /api/v1
+
+application:
+  security:
+    secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+    expiration: 86400000
+  mailing:
+    frontend:
+      activation-url: http://localhost:5731/activate-account

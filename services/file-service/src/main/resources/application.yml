@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: file-service
+  config:
+    import: optional:configserver:http://localhost:8888
+
+cloudinary:
+  cloud-name: dq8ufuxuz
+  api-key: 334842229351884
+  api-secret: 6IX6zEexR5a5R35k_jiRff81eaU

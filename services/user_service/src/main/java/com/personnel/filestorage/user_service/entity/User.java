@@ -20,6 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity
+@Table(name = "_users")
 @EntityListeners(AuditingEntityListener.class)
 public class User implements UserDetails, Principal {
     @Id
@@ -73,5 +74,9 @@ public class User implements UserDetails, Principal {
     @Override
     public boolean implies(Subject subject) {
         return Principal.super.implies(subject);
+    }
+
+    public String getFullName() {
+        return firstName + " " + lastName;
     }
 }
