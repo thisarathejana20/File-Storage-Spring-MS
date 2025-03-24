@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface FileShareRepository extends JpaRepository<FileShare,Integer> {
+    @Modifying
+    @Query("DELETE FROM FileShare f WHERE f.file.id = ?1 AND f.sharedEmail = ?2")
     void deleteByFileIdAndSharedEmail(int id, String email);
 
     @Modifying

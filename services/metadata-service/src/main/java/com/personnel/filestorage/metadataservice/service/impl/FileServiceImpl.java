@@ -2,13 +2,16 @@ package com.personnel.filestorage.metadataservice.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.personnel.filestorage.metadataservice.dto.FileResponse;
+import com.personnel.filestorage.metadataservice.dto.FileShareProducer;
 import com.personnel.filestorage.metadataservice.dto.FileShareRequest;
 import com.personnel.filestorage.metadataservice.dto.FileUploadedConsumer;
 import com.personnel.filestorage.metadataservice.entity.FileDetails;
 import com.personnel.filestorage.metadataservice.entity.FileShare;
+import com.personnel.filestorage.metadataservice.producer.FileSharedProducer;
 import com.personnel.filestorage.metadataservice.repository.FileDetailsRepository;
 import com.personnel.filestorage.metadataservice.repository.FileShareRepository;
 import com.personnel.filestorage.metadataservice.service.FileService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,7 @@ public class FileServiceImpl implements FileService {
     private final FileShareRepository fileShareRepository;
     private final FileDetailsRepository fileDetailsRepository;
     private final ObjectMapper objectMapper;
+    private final FileSharedProducer fileSharedProducer;
 
     @Override
     public void saveFile(FileUploadedConsumer fileUploadedConsumer) {
@@ -37,6 +41,14 @@ public class FileServiceImpl implements FileService {
                 .sharedEmail(fileShareRequest.email())
                 .permission(fileShareRequest.permission())
                 .build());
+        fileSharedProducer.sendMessage(
+                FileShareProducer.builder()
+                        .email(fileShareRequest.email())
+                        .permission(fileShareRequest.permission())
+                        .fileName(fileDetails.getFileName())
+                        .templateType("file_share")
+                        .build()
+        );
         return "File shared successfully";
     }
 
@@ -49,6 +61,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    @Transactional
     public String removeFileShare(String fileId, String email) {
         fileDetailsRepository.findById(Integer.parseInt(fileId))
                 .orElseThrow(() -> new RuntimeException("File not found"));
@@ -57,6 +70,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    @Transactional
     public String updatePermission(String fileId, String email, String permission) {
         fileDetailsRepository.findById(Integer.parseInt(fileId))
                 .orElseThrow(() -> new RuntimeException("File not found"));
@@ -66,15 +80,19 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public String updateFileDetails(Integer id, String fileName) {
-        fileDetailsRepository.findById(id)
+        FileDetails fileDetails = fileDetailsRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("File not found"));
-        fileDetailsRepository.updateFileName(fileName);
+        fileDetails.setFileName(fileName);
+        fileDetailsRepository.save(fileDetails);
         return "File name updated successfully";
     }
 
     @Override
     public List<FileResponse> getFiles(String email) {
         List<FileDetails> byOwnerEmail = fileDetailsRepository.findByOwnerEmail(email);
+        if (byOwnerEmail.isEmpty()) {
+            return new ArrayList<>();
+        }
         return objectMapper.convertValue(byOwnerEmail,
                 objectMapper.getTypeFactory().constructCollectionType(List.class, FileResponse.class));
     }

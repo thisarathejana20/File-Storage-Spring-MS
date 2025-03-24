@@ -93,18 +93,18 @@ public class UserServiceImpl implements UserService {
         var claims = new HashMap<String, Object>();
         var user = ((User) auth.getPrincipal());
         claims.put("fullName", user.getFullName());
+//        var user = userRepository.findByEmail(authenticationRequest.getEmail())
+//                .orElseThrow(() -> new RuntimeException("User not found"));
         var jwtToken = jwtService.generateToken(claims, user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
     }
 
-    //    @Transactional
     public void activateAccount(String code) {
         Token savedToken = tokenRepository.findByCode(code).
                 orElseThrow(() -> new RuntimeException("Token not found"));
         if (LocalDateTime.now().isAfter(savedToken.getExpiresAt())) {
-//            sendValidationEmail(savedToken.getUser());
             throw new RuntimeException("Token expired");
         }
         var user = userRepository.findById(savedToken.getUser().getId())

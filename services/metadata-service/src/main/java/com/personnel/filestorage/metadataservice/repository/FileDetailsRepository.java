@@ -11,5 +11,6 @@ public interface FileDetailsRepository extends JpaRepository<FileDetails,Integer
     @Query("UPDATE FileDetails f SET f.fileName = ?1")
     void updateFileName(String fileName);
 
+    @Query("SELECT f FROM FileDetails f WHERE f.ownerEmail = ?1")
     List<FileDetails> findByOwnerEmail(String email);
 }

@@ -22,8 +22,8 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: com.personnel.filestorage
-        spring.json.type.mapping: accountActivationRequest:com.personnel.filestorage.notificationservice.dto.AccountActivationConsumer
+        spring.json.trusted.packages: "*"
+        spring.json.type.mapping: accountActivationRequest:com.personnel.filestorage.notificationservice.dto.AccountActivationConsumer, fileShareProducer:com.personnel.filestorage.notificationservice.dto.FileSharedConsumer
 
 server:
   port: 8040

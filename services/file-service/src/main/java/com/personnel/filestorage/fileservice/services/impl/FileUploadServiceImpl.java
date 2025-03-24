@@ -1,7 +1,6 @@
 package com.personnel.filestorage.fileservice.services.impl;
 
 import com.cloudinary.Cloudinary;
-import com.personnel.filestorage.fileservice.configuration.CloudinaryConfig;
 import com.personnel.filestorage.fileservice.dto.FileDetailsRequest;
 import com.personnel.filestorage.fileservice.producer.FileUploadedProducer;
 import com.personnel.filestorage.fileservice.services.FileUploadService;
@@ -18,7 +17,7 @@ public class FileUploadServiceImpl implements FileUploadService {
     private final Cloudinary cloudinary;
     private final FileUploadedProducer fileUploadedProducer;
 
-    public String upload(MultipartFile multipartFile) throws IOException {
+    public String upload(MultipartFile multipartFile,String email) throws IOException {
         Map upload = cloudinary.uploader().upload(multipartFile.getBytes(),
                 Map.of("resource_type", "auto"));
         fileUploadedProducer.sendMessage(FileDetailsRequest
@@ -27,8 +26,12 @@ public class FileUploadServiceImpl implements FileUploadService {
                 .fileName(multipartFile.getOriginalFilename())
                 .fileSize(multipartFile.getSize())
                 .fileType(multipartFile.getContentType())
-                .ownerEmail("")
+                .ownerEmail(email)
                 .build());
         return upload.get("secure_url").toString();
+    }
+
+    public void delete(String publicId) throws IOException {
+        cloudinary.uploader().destroy(publicId, Map.of("invalidate", true));
     }
 }

@@ -29,7 +29,9 @@ public class AuthenticationFilter implements GlobalFilter {
             String token = Objects.requireNonNull(request.getHeaders()
                     .getFirst(HttpHeaders.AUTHORIZATION)).substring(7);
             String email = request.getHeaders().getFirst("userEmail");
-            assert email != null;
+            if (email == null) {
+                return onError(exchange, "User email missing", HttpStatus.UNAUTHORIZED);
+            }
             if (!jwtService.isTokenValid(token, email)) {
                 return onError(exchange, "Invalid Token", HttpStatus.UNAUTHORIZED);
             }

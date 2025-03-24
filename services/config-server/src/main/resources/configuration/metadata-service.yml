@@ -27,7 +27,7 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
-        spring.json.type.mapping: accountActivationRequest:com.personnel.filestorage.user_service.dto.AccountActivationRequest
+        spring.json.type.mapping: fileShareProducer:com.personnel.filestorage.metadataservice.dto.FileShareProducer
 
 server:
   port: 8050

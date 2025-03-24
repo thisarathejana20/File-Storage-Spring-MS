@@ -20,9 +20,13 @@ public class UserController {
         return ResponseEntity.ok(userService.register(registrationRequest));
     }
 
-    @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody @Valid AuthenticationRequest authenticationRequest) {
-        return ResponseEntity.ok(userService.authenticate(authenticationRequest));
+    @PostMapping("/login")
+    public ResponseEntity<AuthenticationResponse> authenticate(
+            @RequestBody @Valid AuthenticationRequest authenticationRequest) {
+        System.out.println(authenticationRequest.getEmail());
+        System.out.println(authenticationRequest.getPassword());
+        AuthenticationResponse authenticate = userService.authenticate(authenticationRequest);
+        return ResponseEntity.ok(authenticate);
     }
 
     @GetMapping("/activate-account")

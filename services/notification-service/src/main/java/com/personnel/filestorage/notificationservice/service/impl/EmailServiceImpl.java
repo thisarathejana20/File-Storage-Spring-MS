@@ -22,7 +22,7 @@ public class EmailServiceImpl implements EmailService {
     private final SpringTemplateEngine springTemplateEngine;
 
     @Async
-    public void sendEmail(String to,
+    public void sendAccountActivationEmail(String to,
                           String username,
                           String confirmationUrl,
                           String templateName,
@@ -43,7 +43,37 @@ public class EmailServiceImpl implements EmailService {
         Context context = new Context();
         context.setVariables(properties);
 
-        mimeMessageHelper.setFrom("nD2Vj@example.com");
+        mimeMessageHelper.setFrom("filestorage@example.com");
+        mimeMessageHelper.setTo(to);
+        mimeMessageHelper.setSubject(subject);
+
+        String template = springTemplateEngine.process(templateName, context);
+
+        mimeMessageHelper.setText(template, true);
+        javaMailSender.send(mimeMessage);
+    }
+
+    @Async
+    public void sendFileSharedEmail(String to,
+                                           String fileName,
+                                           String permission,
+                                           String templateName,
+                                           String subject) throws MessagingException {
+
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(
+                mimeMessage,
+                MimeMessageHelper.MULTIPART_MODE_MIXED,
+                StandardCharsets.UTF_8.name()
+        );
+        Map<String ,Object> properties = new HashMap<>();
+        properties.put("fileName", fileName);
+        properties.put("permission", permission);
+
+        Context context = new Context();
+        context.setVariables(properties);
+
+        mimeMessageHelper.setFrom("filestorage@example.com");
         mimeMessageHelper.setTo(to);
         mimeMessageHelper.setSubject(subject);
 
