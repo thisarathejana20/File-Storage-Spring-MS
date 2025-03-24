@@ -6,4 +6,5 @@ import java.io.IOException;
 
 public interface FileUploadService {
     String upload(MultipartFile multipartFile,String email) throws IOException;
+    void delete(String publicId) throws IOException;
 }

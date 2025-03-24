@@ -13,8 +13,11 @@ import com.personnel.filestorage.metadataservice.repository.FileShareRepository;
 import com.personnel.filestorage.metadataservice.service.FileService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +28,9 @@ public class FileServiceImpl implements FileService {
     private final FileDetailsRepository fileDetailsRepository;
     private final ObjectMapper objectMapper;
     private final FileSharedProducer fileSharedProducer;
+    private static final String CACHE_PREFIX_User_Files = "userFiles:";
+    private static final String CACHE_PREFIX_shared_files = "sharedFiles:";
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public void saveFile(FileUploadedConsumer fileUploadedConsumer) {
@@ -88,13 +94,21 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    @Cacheable(value = "userFiles",key = "#email")
     public List<FileResponse> getFiles(String email) {
+        String cacheKey = CACHE_PREFIX_User_Files + email;
+        List<FileResponse> fileResponses = (List<FileResponse>) redisTemplate.opsForValue().get(cacheKey);
+        if (fileResponses != null) {
+            return fileResponses;
+        }
         List<FileDetails> byOwnerEmail = fileDetailsRepository.findByOwnerEmail(email);
         if (byOwnerEmail.isEmpty()) {
             return new ArrayList<>();
         }
-        return objectMapper.convertValue(byOwnerEmail,
+        List<FileResponse> list = objectMapper.convertValue(byOwnerEmail,
                 objectMapper.getTypeFactory().constructCollectionType(List.class, FileResponse.class));
+        redisTemplate.opsForValue().set(cacheKey, list, Duration.ofHours(1));
+        return list;
     }
 
     @Override

@@ -93,8 +93,6 @@ public class UserServiceImpl implements UserService {
         var claims = new HashMap<String, Object>();
         var user = ((User) auth.getPrincipal());
         claims.put("fullName", user.getFullName());
-//        var user = userRepository.findByEmail(authenticationRequest.getEmail())
-//                .orElseThrow(() -> new RuntimeException("User not found"));
         var jwtToken = jwtService.generateToken(claims, user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)

@@ -11,6 +11,16 @@ spring:
       properties:
         spring.json.type.mapping: fileDetailsRequest:com.personnel.filestorage.fileservice.dto.FileDetailsRequest
 
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: delete-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.type.mapping: fileDeleteRequest:com.personnel.filestorage.fileservice.dto.FileDeleteRequest
+
 cloudinary:
   cloud-name: dq8ufuxuz
   api-key: 334842229351884

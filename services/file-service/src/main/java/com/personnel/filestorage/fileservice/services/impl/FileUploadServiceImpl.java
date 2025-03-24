@@ -27,6 +27,7 @@ public class FileUploadServiceImpl implements FileUploadService {
                 .fileSize(multipartFile.getSize())
                 .fileType(multipartFile.getContentType())
                 .ownerEmail(email)
+                .publicId(upload.get("public_id").toString())
                 .build());
         return upload.get("secure_url").toString();
     }

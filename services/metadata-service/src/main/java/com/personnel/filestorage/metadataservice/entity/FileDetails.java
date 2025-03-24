@@ -22,6 +22,7 @@ public class FileDetails {
     private String fileUrl;
     private String ownerEmail;
     private Long fileSize;
+    private String publicId;
     @OneToMany(mappedBy = "file", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FileShare> sharedWith;
 }

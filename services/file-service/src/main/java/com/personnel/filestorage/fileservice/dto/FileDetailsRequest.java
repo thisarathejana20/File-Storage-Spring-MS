@@ -8,6 +8,7 @@ public record FileDetailsRequest(
         String fileType,
         String fileUrl,
         String ownerEmail,
-        Long fileSize
+        Long fileSize,
+        String publicId
 ) {
 }
