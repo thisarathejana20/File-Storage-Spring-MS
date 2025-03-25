@@ -23,8 +23,6 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody @Valid AuthenticationRequest authenticationRequest) {
-        System.out.println(authenticationRequest.getEmail());
-        System.out.println(authenticationRequest.getPassword());
         AuthenticationResponse authenticate = userService.authenticate(authenticationRequest);
         return ResponseEntity.ok(authenticate);
     }

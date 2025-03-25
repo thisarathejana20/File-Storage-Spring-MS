@@ -2,6 +2,7 @@ package com.personnel.filestorage.apigateway.security;
 
 import com.personnel.filestorage.apigateway.service.JwtService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +15,7 @@ import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationFilter implements GlobalFilter {
     private final JwtService jwtService;
     private final RouteValidator routeValidator;
@@ -23,17 +25,17 @@ public class AuthenticationFilter implements GlobalFilter {
         ServerHttpRequest request = exchange.getRequest();
         if (routeValidator.isSecured(request)) {
             if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
-                return onError(exchange, "Authorization header missing", HttpStatus.UNAUTHORIZED);
+                return onError(exchange, "Authorization header missing");
             }
 
             String token = Objects.requireNonNull(request.getHeaders()
                     .getFirst(HttpHeaders.AUTHORIZATION)).substring(7);
             String email = request.getHeaders().getFirst("userEmail");
             if (email == null) {
-                return onError(exchange, "User email missing", HttpStatus.UNAUTHORIZED);
+                return onError(exchange, "User email missing");
             }
             if (!jwtService.isTokenValid(token, email)) {
-                return onError(exchange, "Invalid Token", HttpStatus.UNAUTHORIZED);
+                return onError(exchange, "Invalid Token");
             }
 
             String userEmail = jwtService.extractEmail(token);
@@ -49,8 +51,9 @@ public class AuthenticationFilter implements GlobalFilter {
         return chain.filter(exchange);
     }
 
-    private Mono<Void> onError(ServerWebExchange exchange, String err, HttpStatus status) {
-        exchange.getResponse().setStatusCode(status);
+    private Mono<Void> onError(ServerWebExchange exchange, String err) {
+        log.error(err);
+        exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
         return exchange.getResponse().setComplete();
     }
 }

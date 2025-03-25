@@ -1,6 +1,5 @@
 package com.personnel.filestorage.user_service.entity;
 
-import com.personnel.filestorage.user_service.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
