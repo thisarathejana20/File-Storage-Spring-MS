@@ -27,7 +27,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
-                        req.requestMatchers("auth/**")
+                        req.requestMatchers("auth/**","/actuator/prometheus")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated())

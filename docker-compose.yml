@@ -66,8 +66,35 @@ services:
     networks:
       - fss-network
 
+  prometheus:
+    container_name: fss-prometheus
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - fss-network
+
+  grafana:
+    container_name: fss-grafana
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - fss-network
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin # Set the admin username for Grafana
+      - GF_SECURITY_ADMIN_PASSWORD=admin # Set the admin password for Grafana
+      - GF_USERS_ALLOW_SIGN_UP=false # Disable user sign-up
+    volumes:
+        - grafana-storage:/var/lib/grafana # Persistent storage for Grafana data
+    depends_on:
+        - prometheus
+
 volumes:
   pg_data:
+  grafana-storage:
 
 networks:
   fss-network:
